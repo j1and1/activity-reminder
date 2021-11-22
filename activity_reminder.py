@@ -33,12 +33,12 @@ class MainWindow(QtWidgets.QWidget):
     def timer_loop(self):
         while self.enabled:
             while self.time > 0 and self.enabled:
-                self.time = self.time - 1
                 self.text.setText(f'Time left:{datetime.timedelta(seconds=self.time)}')
                 time.sleep(1)
+                self.time = self.time - 1
 
             self.text.setText('Please do 20 squats')
-            time.sleep(20)
+            time.sleep(60)
 
             self.time = TIME_CONSTANT
 
