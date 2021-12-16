@@ -4,14 +4,14 @@ import time
 import datetime
 from PySide6 import QtCore, QtWidgets, QtGui
 
-TIME_CONSTANT = 45 * 60
+from config import Config
 
 class MainWindow(QtWidgets.QWidget):
 
-    def __init__(self):
+    def __init__(self, cfg):
         super().__init__()
 
-        self.time = TIME_CONSTANT
+        self.time = cfg.time
         self.enabled = True
 
         self.button = QtWidgets.QPushButton("Stop")
@@ -40,13 +40,15 @@ class MainWindow(QtWidgets.QWidget):
             self.text.setText('Please do 20 squats')
             time.sleep(60)
 
-            self.time = TIME_CONSTANT
+            self.time = cfg.time
 
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
 
-    widget = MainWindow()
+    cfg = Config()
+    widget = MainWindow(cfg)
+
     widget.resize(200, 150)
     widget.show()
 
