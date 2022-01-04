@@ -1,2 +1,4 @@
-fbs==1.0.1
+mediapipe==0.8.9.1
+opencv-contrib-python==4.5.5.62
+opencv-python==4.5.5.62
 PySide6==6.2.1

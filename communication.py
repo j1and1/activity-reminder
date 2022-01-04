@@ -21,9 +21,6 @@ class Communication(object):
 
     def main_loop(self):
         while self._running:
-            with self._cv:
-                self._cv.wait()
-
             if not self._running:
                 return
 
@@ -38,6 +35,3 @@ class Communication(object):
         # append newline and send data
         self._serial.write(f"{data}\n".encode())
         self._serial.flush()
-        #notify thread that we should start reading
-        with self._cv:
-            self._cv.notifyAll()
