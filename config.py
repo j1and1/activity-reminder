@@ -31,12 +31,17 @@ class Config(object):
     def allowed_skips(self):
         return self.cfg["allowed_skips"]
 
+    @property
+    def camera(self):
+        return self.cfg["camera"]
+
     def create_empty(self):
         self.cfg = {}
         self.cfg["port"] = "COM1"
         self.cfg["baud"] = 9600 
         self.cfg["time"] = 45 # default time in minutes
         self.cfg["allowed_skips"] = 3
+        self.cfg["camera"] = 0
 
     def write_config(self):
         with open(self.file_path, 'w') as config_file:
