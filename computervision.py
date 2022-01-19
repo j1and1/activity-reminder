@@ -2,6 +2,7 @@ from time import sleep
 import cv2
 import mediapipe as mp 
 import threading
+import math
 
 class PoseDetector:
 
@@ -23,10 +24,10 @@ class PoseDetector:
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 if id == landmark_id:
                     return cx, cy #landmark found return position
-        return None, None # landmark not found
+        raise Exception("landmark not found") # landmark not found throw
 
-    def draw_position(self):
-        self.mpDraw.draw_landmarks(self.image_rgb, self.results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
+    def draw_position(self, image):
+        self.mpDraw.draw_landmarks(image, self.results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
 
 class ComputerVision:
 
@@ -56,4 +57,58 @@ class ComputerVision:
 class SquatDetector:
 
     def __init__(self, cfg, on_frame_ready, on_detected):
-        pass
+        self.on_frame_ready = on_frame_ready
+        self.on_detected = on_detected
+        self.cfg = cfg
+
+        self.vision = None
+        self.last_angle = 0
+
+        self.detector = PoseDetector()
+
+    def start(self):
+        if self.vision is not None:
+            self.vision.stop()
+        self.vision = ComputerVision(self.cfg, self.frame_ready)
+
+    def stop(self):
+        if self.vision is not None:
+            self.vision.stop()
+
+    def frame_ready(self, image, image_rgb):
+        detector = self.detector
+        detector.detect(image_rgb)
+        detector.draw_position(image)
+
+        self.on_frame_ready(image)
+
+        angle = 0
+        #get the positions of all needed limbs
+        #left side
+        try:
+            ankle_x, ankle_y = detector.find_landmark(detector.mpPose.PoseLandmark.LEFT_ANKLE)
+            knee_x, knee_y = detector.find_landmark(detector.mpPose.PoseLandmark.LEFT_KNEE)
+            hip_x, hip_y = detector.find_landmark(detector.mpPose.PoseLandmark.LEFT_HIP)
+
+            angle = math.degrees(math.atan2((hip_y - knee_y, hip_x - knee_x) - math.atan2(ankle_y - knee_y, ankle_x - knee_x)))
+        except:
+            pass
+        #right side
+        try:
+            ankle_x, ankle_y = detector.find_landmark(detector.mpPose.PoseLandmark.RIGHT_ANKLE)
+            knee_x, knee_y = detector.find_landmark(detector.mpPose.PoseLandmark.RIGHT_KNEE)
+            hip_x, hip_y = detector.find_landmark(detector.mpPose.PoseLandmark.RIGHT_HIP)
+
+            angle = math.degrees(math.atan2((hip_y - knee_y, hip_x - knee_x) - math.atan2(ankle_y - knee_y, ankle_x - knee_x)))
+        except:
+            pass
+
+        if angle <= 90:
+            if self.last_angle >= 175:
+                self.on_detected(True) #let parent know that we're squatting
+                self.last_angle = angle
+        elif angle >= 175:
+            if self.last_angle <= 90:
+                self.on_detected(False) # let parent class know that we're stanging
+                self.last_angle = angle
+
