@@ -75,10 +75,11 @@ class SquatDetector:
         if self.vision is not None:
             self.vision.stop()
 
-    def frame_ready(self, image, image_rgb):
-        detector = self.detector
-        detector.detect(image_rgb)
-        detector.draw_position(image)
+    def frame_ready(self, ret, image, image_rgb):
+        if not ret:
+            return
+        self.detector.detect(image_rgb)
+        self.detector.draw_position(image)
 
         self.on_frame_ready(image)
 
@@ -86,18 +87,18 @@ class SquatDetector:
         #get the positions of all needed limbs
         #left side
         try:
-            ankle_x, ankle_y = detector.find_landmark(detector.mpPose.PoseLandmark.LEFT_ANKLE)
-            knee_x, knee_y = detector.find_landmark(detector.mpPose.PoseLandmark.LEFT_KNEE)
-            hip_x, hip_y = detector.find_landmark(detector.mpPose.PoseLandmark.LEFT_HIP)
+            ankle_x, ankle_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.LEFT_ANKLE)
+            knee_x, knee_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.LEFT_KNEE)
+            hip_x, hip_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.LEFT_HIP)
 
             angle = math.degrees(math.atan2((hip_y - knee_y, hip_x - knee_x) - math.atan2(ankle_y - knee_y, ankle_x - knee_x)))
         except:
             pass
         #right side
         try:
-            ankle_x, ankle_y = detector.find_landmark(detector.mpPose.PoseLandmark.RIGHT_ANKLE)
-            knee_x, knee_y = detector.find_landmark(detector.mpPose.PoseLandmark.RIGHT_KNEE)
-            hip_x, hip_y = detector.find_landmark(detector.mpPose.PoseLandmark.RIGHT_HIP)
+            ankle_x, ankle_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_ANKLE)
+            knee_x, knee_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_KNEE)
+            hip_x, hip_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_HIP)
 
             angle = math.degrees(math.atan2((hip_y - knee_y, hip_x - knee_x) - math.atan2(ankle_y - knee_y, ankle_x - knee_x)))
         except:

@@ -2,54 +2,67 @@ import sys
 import threading
 import time
 import datetime
-from PySide6 import QtCore, QtWidgets, QtGui
+
+from PySide6 import QtWidgets
 
 from config import Config
+from computervision import SquatDetector
+from main_window import MainWindow
 
-class MainWindow(QtWidgets.QWidget):
+class ActivityReminder:
 
-    def __init__(self, cfg):
-        super().__init__()
-
-        self.time = cfg.time
+    def __init__(self, cfg, window):
+        self.cfg = cfg
+        self.window = window
         self.enabled = True
 
-        self.button = QtWidgets.QPushButton("Stop")
-        self.text = QtWidgets.QLabel("Hello World", alignment=QtCore.Qt.AlignCenter)
-        self.text.setFont(QtGui.QFont('Arial', 24))
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
+        self.time = cfg.time
 
-        self.button.clicked.connect(self.kill_timer)
-        
+        #self.sd = SquatDetector(self.cfg, self.frame_ready, self.on_detected)
+        #self.sd.start()
+
         self.timer = threading.Thread(target=self.timer_loop)
         self.timer.start()
 
-    @QtCore.Slot()
-    def kill_timer(self):
+    def stop(self):
+        #self.sd.stop()
         self.enabled = False
+        self.timer.join()
+
+    def frame_ready(self, image):
+        self.window.update_image(image)
+
+    def on_detected(self, is_squating):
+        pass
 
     def timer_loop(self):
         while self.enabled:
             while self.time > 0 and self.enabled:
-                self.text.setText(f'Time left:{datetime.timedelta(seconds=self.time)}')
+                text = f'Time left:{datetime.timedelta(seconds=self.time)}'
+                self.window.update_lable(text)
                 time.sleep(1)
                 self.time = self.time - 1
 
-            self.text.setText('Please do 20 squats')
+            text = 'Please do 20 squats'
+            self.window.update_lable(text)
             time.sleep(60)
 
-            self.time = cfg.time
+            self.time = self.cfg.time
 
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
+    app.setQuitOnLastWindowClosed(True)
 
     cfg = Config()
-    widget = MainWindow(cfg)
-
+    widget = MainWindow()
     widget.resize(200, 150)
     widget.show()
 
-    sys.exit(app.exec())
+    #start timer and comunication logic
+    reminder = ActivityReminder(cfg, widget)
+
+    exit_code = app.exec()
+    #stop timer and comunication logic
+    reminder.stop()
+    sys.exit(exit_code)
