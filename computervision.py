@@ -84,32 +84,36 @@ class SquatDetector:
 
         self.on_frame_ready(image)
 
-        angle = 180
         #get the positions of all needed limbs
         #left side
+        angle_left = 180
         try:
             ankle_x, ankle_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.LEFT_ANKLE)
             knee_x, knee_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.LEFT_KNEE)
             hip_x, hip_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.LEFT_HIP)
 
-            angle = math.degrees(math.atan2(hip_x - knee_x, hip_y - knee_y) - math.atan2(ankle_x - knee_x, ankle_y - knee_y))
-            print(f'Current LEFT angle is: {angle}')
+            angle_left = math.degrees(math.atan2(hip_x - knee_x, hip_y - knee_y) - math.atan2(ankle_x - knee_x, ankle_y - knee_y))
+            angle_left = abs(angle_left)
+            print(f'Current LEFT angle is: {angle_left}')
         except Exception as e:
             #print (str(e))
             pass
 
         #right side
+        angle_right = 180
         try:
             ankle_x, ankle_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_ANKLE)
             knee_x, knee_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_KNEE)
             hip_x, hip_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_HIP)
 
-            angle = math.degrees(math.atan2(hip_x - knee_x, hip_y - knee_y) - math.atan2(ankle_x - knee_x, ankle_y - knee_y))
-            print(f'Current RIGHT angle is: {angle}')
+            angle_right = math.degrees(math.atan2(hip_x - knee_x, hip_y - knee_y) - math.atan2(ankle_x - knee_x, ankle_y - knee_y))
+            angle_right = abs(angle_right)
+            print(f'Current RIGHT angle is: {angle_right}')
         except Exception as e:
             #print (str(e))
             pass
-
+        
+        angle = (angle_right + angle_left) / 2.0
         if angle <= 90:
             if self.last_angle >= 175:
                 self.on_detected(True) #let parent know that we're squatting
