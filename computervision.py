@@ -13,18 +13,19 @@ class PoseDetector:
 
     def detect(self, image_rgb):
         self.image_rgb = image_rgb
-        self.results = self.pose.detect(image_rgb)
+        self.results = self.pose.process(image_rgb)
         return self.results.pose_landmarks
 
     def find_landmark(self, landmark_id):
         results = self.results.pose_landmarks
         if results:
             h, w, c = self.image_rgb.shape
-            for id, lm in enumerate(results):
+            for id, lm in enumerate(results.landmark):
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 if id == landmark_id:
+                    #print(f"Landmark with {id} found at {cx} {cy}")
                     return cx, cy #landmark found return position
-        raise Exception("landmark not found") # landmark not found throw
+        raise Exception(f"Landmark not found with {landmark_id}") # landmark not found throw
 
     def draw_position(self, image):
         self.mpDraw.draw_landmarks(image, self.results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
@@ -83,7 +84,7 @@ class SquatDetector:
 
         self.on_frame_ready(image)
 
-        angle = 0
+        angle = 180
         #get the positions of all needed limbs
         #left side
         try:
@@ -91,17 +92,22 @@ class SquatDetector:
             knee_x, knee_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.LEFT_KNEE)
             hip_x, hip_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.LEFT_HIP)
 
-            angle = math.degrees(math.atan2((hip_y - knee_y, hip_x - knee_x) - math.atan2(ankle_y - knee_y, ankle_x - knee_x)))
-        except:
+            angle = math.degrees(math.atan2(hip_x - knee_x, hip_y - knee_y) - math.atan2(ankle_x - knee_x, ankle_y - knee_y))
+            print(f'Current LEFT angle is: {angle}')
+        except Exception as e:
+            #print (str(e))
             pass
+
         #right side
         try:
             ankle_x, ankle_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_ANKLE)
             knee_x, knee_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_KNEE)
             hip_x, hip_y = self.detector.find_landmark(self.detector.mpPose.PoseLandmark.RIGHT_HIP)
 
-            angle = math.degrees(math.atan2((hip_y - knee_y, hip_x - knee_x) - math.atan2(ankle_y - knee_y, ankle_x - knee_x)))
-        except:
+            angle = math.degrees(math.atan2(hip_x - knee_x, hip_y - knee_y) - math.atan2(ankle_x - knee_x, ankle_y - knee_y))
+            print(f'Current RIGHT angle is: {angle}')
+        except Exception as e:
+            #print (str(e))
             pass
 
         if angle <= 90:

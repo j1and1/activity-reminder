@@ -27,7 +27,6 @@ class ActivityReminder:
     def stop(self):
         #self.sd.stop()
         self.enabled = False
-        self.timer.join()
 
     def frame_ready(self, image):
         self.window.update_image(image)
