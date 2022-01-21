@@ -53,7 +53,7 @@ class ComputerVision:
 
     def stop(self):
         self.running = False
-        self.process.join()
+        # self.process.join()
 
 class SquatDetector:
 
@@ -76,6 +76,10 @@ class SquatDetector:
         if self.vision is not None:
             self.vision.stop()
 
+    def wait(self):
+        if self.vision is not None:
+            self.vision.process.join()
+
     def frame_ready(self, ret, image, image_rgb):
         if not ret:
             return
@@ -94,7 +98,7 @@ class SquatDetector:
 
             angle_left = math.degrees(math.atan2(hip_x - knee_x, hip_y - knee_y) - math.atan2(ankle_x - knee_x, ankle_y - knee_y))
             angle_left = abs(angle_left)
-            print(f'Current LEFT angle is: {angle_left}')
+            # print(f'Current LEFT angle is: {angle_left}')
         except Exception as e:
             #print (str(e))
             pass
@@ -108,7 +112,7 @@ class SquatDetector:
 
             angle_right = math.degrees(math.atan2(hip_x - knee_x, hip_y - knee_y) - math.atan2(ankle_x - knee_x, ankle_y - knee_y))
             angle_right = abs(angle_right)
-            print(f'Current RIGHT angle is: {angle_right}')
+            # print(f'Current RIGHT angle is: {angle_right}')
         except Exception as e:
             #print (str(e))
             pass
@@ -116,10 +120,10 @@ class SquatDetector:
         angle = (angle_right + angle_left) / 2.0
         if angle <= 90:
             if self.last_angle >= 175:
-                self.on_detected(True) #let parent know that we're squatting
+                self.on_detected(True, angle) #let parent know that we're squatting
                 self.last_angle = angle
         elif angle >= 175:
             if self.last_angle <= 90:
-                self.on_detected(False) # let parent class know that we're stanging
+                self.on_detected(False, angle) # let parent class know that we're stanging
                 self.last_angle = angle
 

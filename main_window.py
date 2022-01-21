@@ -20,8 +20,12 @@ class MainWindow(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
     def update_image(self, image):
-        self.image = QtGui.QImage(image.data, image.shape[1], image.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
-        self.image_frame.setPixmap(QtGui.QPixmap.fromImage(self.image))
+        if image is not None:
+            self.image = QtGui.QImage(image.data, image.shape[1], image.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
+            self.image_frame.setPixmap(QtGui.QPixmap.fromImage(self.image))
+        else:
+            self.image_frame.setPixmap(QtGui.QPixmap())
+            self.resize(200, 150)
 
     def update_lable(self, text):
         self.text.setText(text)

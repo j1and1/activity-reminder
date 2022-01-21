@@ -35,13 +35,19 @@ class Config(object):
     def camera(self):
         return self.cfg["camera"]
 
+    @property
+    def squat_count(self):
+        return self.cfg["squats"]
+
     def create_empty(self):
         self.cfg = {}
-        self.cfg["port"] = "COM1"
+        self.cfg["port"] = "COM3"
         self.cfg["baud"] = 9600 
         self.cfg["time"] = 45 # default time in minutes
-        self.cfg["allowed_skips"] = 3
         self.cfg["camera"] = 0
+
+        self.cfg["squats"] = 20
+        self.cfg["allowed_skips"] = 2
 
     def write_config(self):
         with open(self.file_path, 'w') as config_file:
