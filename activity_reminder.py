@@ -22,7 +22,10 @@ class ActivityReminder:
 
         # initialise computervision and serial port
         self.sd = SquatDetector(self.cfg, self.frame_ready, self.on_detected)
-        self.communication = Communication(cfg, self.on_serial_data)
+        try:
+            self.communication = Communication(cfg, self.on_serial_data)
+        except:
+            self.communication = None
         
         self.timer = threading.Thread(target=self.timer_loop)
         self.timer.start()
@@ -64,9 +67,10 @@ class ActivityReminder:
         self.window.update_lable(text)
 
     def update_device_state(self, state):
-        data = {}
-        data["msg"] = state
-        self.communication.send_data(data)
+        if self.communication is not None:
+            data = {}
+            data["msg"] = state
+            self.communication.send_data(data)
 
     def timer_loop(self):
         while self.enabled:

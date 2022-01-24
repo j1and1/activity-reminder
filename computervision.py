@@ -21,8 +21,8 @@ class PoseDetector:
         if results:
             h, w, c = self.image_rgb.shape
             for id, lm in enumerate(results.landmark):
-                cx, cy = int(lm.x * w), int(lm.y * h)
                 if id == landmark_id:
+                    cx, cy = int(lm.x * w), int(lm.y * h)
                     #print(f"Landmark with {id} found at {cx} {cy}")
                     return cx, cy #landmark found return position
         raise Exception(f"Landmark not found with {landmark_id}") # landmark not found throw
