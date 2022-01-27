@@ -6,9 +6,9 @@ import math
 
 class PoseDetector:
 
-    def __init__(self):
+    def __init__(self, cfg):
         self.mpPose = mp.solutions.pose
-        self.pose = self.mpPose.Pose(min_detection_confidence = 0.65)
+        self.pose = self.mpPose.Pose(min_detection_confidence = cfg.precision)
         self.mpDraw = mp.solutions.drawing_utils
 
     def detect(self, image_rgb):
@@ -65,7 +65,7 @@ class SquatDetector:
         self.vision = None
         self.last_angle = 0
 
-        self.detector = PoseDetector()
+        self.detector = PoseDetector(cfg)
 
     def start(self):
         if self.vision is not None:

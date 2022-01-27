@@ -39,6 +39,10 @@ class Config(object):
     def squat_count(self):
         return self.cfg["squats"]
 
+    @property
+    def precision(self):
+        return self.cfg["precision"]
+
     def create_empty(self):
         self.cfg = {}
         self.cfg["port"] = "COM3"
@@ -48,6 +52,7 @@ class Config(object):
 
         self.cfg["squats"] = 20
         self.cfg["allowed_skips"] = 2
+        self.cfg["precision"] = 0.55
 
     def write_config(self):
         with open(self.file_path, 'w') as config_file:
