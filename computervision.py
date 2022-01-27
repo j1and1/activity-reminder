@@ -8,7 +8,7 @@ class PoseDetector:
 
     def __init__(self):
         self.mpPose = mp.solutions.pose
-        self.pose = self.mpPose.Pose()
+        self.pose = self.mpPose.Pose(min_detection_confidence = 0.65)
         self.mpDraw = mp.solutions.drawing_utils
 
     def detect(self, image_rgb):
