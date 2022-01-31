@@ -3,7 +3,7 @@
 #include <Arduino_JSON.h>
 
 #define BUTTON_PIN 10 // btn pin
-#define RELAY_PIN 13 // relay pin
+#define RELAY_PIN 12 // relay pin
 
 
 void setup() {

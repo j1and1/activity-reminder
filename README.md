@@ -25,7 +25,7 @@ There are 2 options on how you can approach this:
 
 ## Setup and Usage
 
-- Flash Arduino code located in `arduino/hub_controller` to your arduino board
+- Flash Arduino code located in `arduino/hub_controller` to your arduino board (**Note:** it requires Arduino_JSON library)
 - Setup python3 enviroment
   - Create new enviroment with `python3 -m venv env` and enable it `source env\Scripts\activate`
   - Install required packages with `pip3 install -r requirements.txt`
